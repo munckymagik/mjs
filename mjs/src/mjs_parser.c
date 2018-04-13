@@ -936,8 +936,8 @@ static mjs_err_t parse_statement(struct pstate *p) {
     case TOK_KEYWORD_VAR:
     case TOK_KEYWORD_VOID:
     case TOK_KEYWORD_WITH:
-      mjs_set_errorf(p->mjs, MJS_SYNTAX_ERROR, "[%.*s] is not implemented",
-                     p->tok.len, p->tok.ptr);
+      mjs_set_errorf(p->mjs, MJS_SYNTAX_ERROR, "parse error at line %d: [%.*s] is not implemented",
+                     p->line_no, p->tok.len, p->tok.ptr);
       return MJS_SYNTAX_ERROR;
     default: {
       mjs_err_t res = MJS_OK;
