@@ -1,0 +1,3 @@
+// Waste some lines so the error is reported on a line other than 1
+// ...
+throw "This should not be possible";

@@ -6,7 +6,7 @@ BUILD_DIR = build
 R ?= $(abspath $(REPO_ROOT))
 RD ?= docker run -v $(R):$(R) -w $(CURDIR)
 DOCKER_GCC ?= $(RD) docker.cesanta.com/gcc
-DOCKER_CLANG ?= $(RD) docker.cesanta.com/clang
+DOCKER_CLANG ?= clang
 
 include $(SRCPATH)/mjs_sources.mk
 
@@ -197,6 +197,13 @@ test_full: $(TEST_VARIANTS) $(PROG)
 # Run just a single test (a first one from $(TEST_VARIANTS))
 test: $(firstword $(TEST_VARIANTS))
 #	$<
+
+test_invalid: $(PROG)
+	@for t in tests/invalid_syntax/*.js; do \
+		echo "TEST: $$t"; \
+		$(PROG) -p "$$t"; \
+		echo; \
+	done
 
 clean:
 	rm -rf $(BUILD_DIR) *.obj mjs.c mjs.h _CL_*
