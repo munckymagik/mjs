@@ -1053,6 +1053,18 @@ MJS_PRIVATE mjs_err_t mjs_exec_internal(struct mjs *mjs, const char *path,
   return mjs->error;
 }
 
+MJS_PRIVATE mjs_err_t mjs_parse_internal(struct mjs *mjs, const char *path,
+                                         const char *src, int generate_jsc,
+                                         mjs_val_t *res) {
+  mjs_val_t r = MJS_UNDEFINED;
+  mjs->error = mjs_parse(path, src, mjs);
+  if (cs_log_threshold >= LL_VERBOSE_DEBUG) mjs_dump(mjs, 1);
+  if (generate_jsc == -1) generate_jsc = mjs->generate_jsc;
+
+  if (res != NULL) *res = r;
+  return mjs->error;
+}
+
 mjs_err_t mjs_exec(struct mjs *mjs, const char *src, mjs_val_t *res) {
   return mjs_exec_internal(mjs, "<stdin>", src, 0 /* generate_jsc */, res);
 }
@@ -1071,6 +1083,27 @@ mjs_err_t mjs_exec_file(struct mjs *mjs, const char *path, mjs_val_t *res) {
 
   r = MJS_UNDEFINED;
   error = mjs_exec_internal(mjs, path, source_code, -1, &r);
+  free(source_code);
+
+clean:
+  if (res != NULL) *res = r;
+  return error;
+}
+
+mjs_err_t mjs_parse_file(struct mjs *mjs, const char *path, mjs_val_t *res) {
+  mjs_err_t error = MJS_FILE_READ_ERROR;
+  mjs_val_t r = MJS_UNDEFINED;
+  size_t size;
+  char *source_code = cs_read_file(path, &size);
+
+  if (source_code == NULL) {
+    error = MJS_FILE_READ_ERROR;
+    mjs_prepend_errorf(mjs, error, "failed to read file \"%s\"", path);
+    goto clean;
+  }
+
+  r = MJS_UNDEFINED;
+  error = mjs_parse_internal(mjs, path, source_code, -1, &r);
   free(source_code);
 
 clean:

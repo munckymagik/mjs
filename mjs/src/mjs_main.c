@@ -28,6 +28,8 @@ int main(int argc, char *argv[]) {
       err = mjs_exec(mjs, argv[++i], &res);
     } else if (strcmp(argv[i], "-f") == 0 && i + 1 < argc) {
       err = mjs_exec_file(mjs, argv[++i], &res);
+    } else if (strcmp(argv[i], "-p") == 0 && i + 1 < argc) {
+      err = mjs_parse_file(mjs, argv[++i], &res);
     } else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
       printf("mJS (c) Cesanta, built: " __DATE__ "\n");
       printf("Usage:\n");
@@ -36,6 +38,7 @@ int main(int argc, char *argv[]) {
       printf("  -e string    - Execute JavaScript expression\n");
       printf("  -j           - Enable code precompiling to .jsc files\n");
       printf("  -f js_file   - Execute code from .js JavaScript file\n");
+      printf("  -p js_file   - Parse code from .js JavaScript file\n");
       printf("  -l level     - Set debug level, from 0 to 5\n");
       return EXIT_SUCCESS;
     } else {
